@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        // Add your installed extensions here
+        "ms-python.python",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "ms-vscode.cpptools",
+        "ms-azuretools.vscode-docker"
+        // ...add other extensions as needed
+    ]
+}
