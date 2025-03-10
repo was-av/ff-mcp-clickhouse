@@ -1,5 +1,5 @@
 # ClickHouse MCP Server
-[![PyPI - Version](https://img.shields.io/pypi/v/mcp-clickhouse)](https://pypi.org/project/mcp-clickhouse)
+[![PyPI - Version](https://img.shields.io/pypi/v/mcp-clickhouse)](https://pypi.org/project/ff-mcp-clickhouse)
 
 An MCP server for ClickHouse.
 
