@@ -2,7 +2,7 @@ import unittest
 
 from dotenv import load_dotenv
 
-from mcp_clickhouse import create_clickhouse_client, list_databases, list_tables, run_select_query
+from mcp_clickhouse import create_clickhouse_client, run_select_query
 
 load_dotenv()
 
