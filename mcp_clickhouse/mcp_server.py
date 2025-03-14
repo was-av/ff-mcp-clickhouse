@@ -9,12 +9,16 @@ import concurrent.futures
 import atexit
 
 import clickhouse_connect
+import pandas as pd
 from clickhouse_connect.driver.binding import format_query_value
 from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP
 from functools import lru_cache
 
 from mcp_clickhouse.mcp_env import config
+
+
+pd.set_option('display.max_columns', 25)
 
 
 MCP_SERVER_NAME = "mcp-clickhouse"
@@ -64,7 +68,7 @@ def list_databases():
            , database_description 
         FROM assistant.databases
         """
-    )
+    ).to_markdown(index=False, tablefmt="pipe")
 
 
 @mcp.tool(
@@ -91,7 +95,7 @@ def list_database_tables(database: str):
         FROM assistant.tables 
         WHERE database_name = {format_query_value(database)}
         """
-    )
+    ).to_markdown(index=False, tablefmt="pipe")
 
 
 @mcp.tool(
@@ -123,7 +127,7 @@ def list_table_columns(table_name_with_schema: str):
         FROM assistant.columns 
         WHERE table_name = {format_query_value(table_name_with_schema)}
         """
-    )
+    ).to_markdown(index=False, tablefmt="pipe")
 
 
 @lru_cache(maxsize=128)
@@ -138,17 +142,8 @@ def execute_query(query: str):
         str: JSON string containing the query results.
     """
     client = create_clickhouse_client()
-    try:
-        res = client.query(query, settings={"readonly": 1})
-        column_names = res.column_names
-        rows = []
-        for row in res.result_rows:
-            row_dict = {}
-            for i, col_name in enumerate(column_names):
-                row_dict[col_name] = row[i]
-            rows.append(row_dict)
-        logger.info(f"Query returned {len(rows)} rows")
-        return rows
+    try:       
+        return client.query_df(query, settings={"readonly": 1})
     except Exception as err:
         logger.error(f"Error executing query: {err}")
         return f"error running query: {err}"
