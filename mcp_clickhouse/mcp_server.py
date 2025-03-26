@@ -131,7 +131,7 @@ def list_table_columns(table_name_with_schema: str):
     name="get_table_relationships",
     description="Displays the relationship structure for the specified table, including foreign keys, dependencies, and relationships with other tables in the data schema. Allows quick visualization of the data model for optimal query construction."
 )
-def list_table_relations(table_name_with_schema: str):
+def get_table_relationships(table_name_with_schema: str):
     """
     List all relations in a specified table.
 
@@ -143,7 +143,7 @@ def list_table_relations(table_name_with_schema: str):
     """
 
     logger.info(
-        f"""Called tool: list_table_relations with argument
+        f"""Called tool: get_table_relationships with argument
         table_name_with_schema={table_name_with_schema}"""
     )
 
