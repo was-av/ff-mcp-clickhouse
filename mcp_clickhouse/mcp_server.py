@@ -61,11 +61,10 @@ def list_databases():
         str: JSON string containing the list of databases and their descriptions.
     """
     logger.info("Called tool: list_databases")
-    client = create_clickhouse_client()
     return execute_query("""
-        SELECT 
+        SELECT
              database_name
-           , database_description 
+           , database_description
         FROM assistant.databases
         """
     ).to_markdown(index=False, tablefmt="pipe")
@@ -86,13 +85,12 @@ def list_database_tables(database: str):
         str: JSON string containing the list of tables and their descriptions.
     """
     logger.info(f"Called tool: list_database_tables with argument database={database}")
-    client = create_clickhouse_client()
     return execute_query(f"""
-        SELECT 
+        SELECT
              table_name
            , table_description
-           , table_sorting_key 
-        FROM assistant.tables 
+           , table_sorting_key
+        FROM assistant.tables
         WHERE database_name = {format_query_value(database)}
         """
     ).to_markdown(index=False, tablefmt="pipe")
@@ -112,20 +110,51 @@ def list_table_columns(table_name_with_schema: str):
     Returns:
         str: JSON string containing the list of columns and their descriptions.
     """
-    
+
     logger.info(
-        f"""Called tool: list_table_columns with argument 
+        f"""Called tool: list_table_columns with argument
         table_name_with_schema={table_name_with_schema}"""
     )
 
-    client = create_clickhouse_client()
     return execute_query(f"""
-        SELECT 
+        SELECT
              column_name
            , column_type
-           , column_description 
-        FROM assistant.columns 
+           , column_description
+        FROM assistant.columns
         WHERE table_name = {format_query_value(table_name_with_schema)}
+        """
+    ).to_markdown(index=False, tablefmt="pipe")
+
+
+@mcp.tool(
+    name="get_table_relationships",
+    description="Displays the relationship structure for the specified table, including foreign keys, dependencies, and relationships with other tables in the data schema. Allows quick visualization of the data model for optimal query construction."
+)
+def get_table_relationships(table_name_with_schema: str):
+    """
+    List all relations in a specified table.
+
+    Args:
+        table_name_with_schema (str): The name of the table with schema.
+
+    Returns:
+        str: JSON string containing the list of relations and their relationship.
+    """
+
+    logger.info(
+        f"""Called tool: get_table_relationships with argument
+        table_name_with_schema={table_name_with_schema}"""
+    )
+
+    return execute_query(f"""
+        SELECT
+            foreign_column_name
+            , related_table_name
+            , join_column_name
+            , relationship
+        FROM assistant.table_relations
+        WHERE table_name =  {format_query_value(table_name_with_schema)}
         """
     ).to_markdown(index=False, tablefmt="pipe")
 
@@ -142,7 +171,7 @@ def execute_query(query: str):
         str: JSON string containing the query results.
     """
     client = create_clickhouse_client()
-    try:       
+    try:
         return client.query_df(query, settings={"readonly": 1})
     except Exception as err:
         logger.error(f"Error executing query: {err}")
@@ -195,7 +224,7 @@ def create_clickhouse_client():
 
     try:
         client = clickhouse_connect.get_client(
-            compression=True, 
+            compression=True,
             **client_config
         )
         # Test the connection
