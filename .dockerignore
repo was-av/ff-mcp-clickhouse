@@ -1,0 +1,12 @@
+venv
+.env
+.env.test
+.idea
+__pycache__
+*.log
+log
+logs
+build
+*.so
+*.c
+.pytest_cache

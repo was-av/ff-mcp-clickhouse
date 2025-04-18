@@ -4,7 +4,6 @@
 	"service": "app",
 	"workspaceFolder": "/workspace",
 	"forwardPorts": [8000, 8123, 9000],
-	"postCreateCommand": "pip install -e '.[dev]'",
 	"customizations": {
 		"vscode": {
 			"extensions": [

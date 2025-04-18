@@ -49,12 +49,6 @@ deps = [
 mcp = FastMCP(MCP_SERVER_NAME, dependencies=deps)
 
 
-@mcp.resource("greetings://users/{user_name}")
-def hello_world(user_name):
-    return f"Hello {user_name}"
-
-
-
 @mcp.tool(
     name="list_databases",
     description="List all databases in the ClickHouse server.",
