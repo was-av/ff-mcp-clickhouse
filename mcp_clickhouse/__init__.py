@@ -1,4 +1,4 @@
-from .mcp_server import (
+from mcp_clickhouse.mcp_server import (
     create_clickhouse_client,
     list_databases,
     list_database_tables,
