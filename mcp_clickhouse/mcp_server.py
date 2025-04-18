@@ -49,6 +49,27 @@ deps = [
 mcp = FastMCP(MCP_SERVER_NAME, dependencies=deps)
 
 
+def helpful_hints():
+    """
+    Provide helpful hints for the user to improve their query.
+    """
+    return """
+    Отвечай только на конкретный вопрос пользователя. 
+    *** Не добавляй дополнительную аналитику ***
+
+    *** Обязательно обращай внимание на ключ сортировки таблицы(table_sorting_key), если он есть ***. 
+    Если в условии where необходимо использовать ключ сортировки, он должен быть на первом месте
+
+    Отдавай данные только в виде таблицы, которую вернул твой SQL запрос, отформатировав ее в markdown формате. Также покажи результирующи SQL код.
+
+    *** Используй синтаксис Clickhouse. *** 
+
+    *** Минимизируй вызовы MCP клиента для базы данных *** 
+    - В метод list_database_tables подставляй сразу все названия баз данных, которые могут быть полезными
+    - В метод list_table_columns подставляй сразу все названия таблиц, которые могут быть полезными    
+    """
+
+
 @mcp.tool(
     name="list_databases",
     description="List all databases in the ClickHouse server.",
@@ -79,29 +100,45 @@ def list_databases():
     return execute_query(sql).to_markdown(index=False, tablefmt="pipe")
 
 
+def format_list_for_sql(values: list[str]) -> str:
+    """
+    Formats a list of strings for use in SQL IN clause.
+    Each element is wrapped in single quotes.
+    
+    Args:
+        values (list[str]): List of string values to format
+        
+    Returns:
+        str: Comma-separated string of quoted values for SQL
+    """
+    return ', '.join([f"'{value}'" for value in values])
+
+
 @mcp.tool(
     name="list_database_tables",
-    description="List all tables in a specified database."
+    description="List all tables in specified databases."
 )
-def list_database_tables(database: str):
+def list_database_tables(databases: list[str]):
     """
-    List all tables in a specified database.
+    List all tables in specified databases.
 
     Args:
-        database (str): The name of the database.
+        databases (list[str]): The list of database names.
 
     Returns:
         str: JSON string containing the list of tables and their descriptions.
     """
-    logger.info(f"Called tool: list_database_tables with argument database={database}")
+    logger.info(f"Called tool: list_database_tables with argument databases={databases}")
 
+    databases_str = format_list_for_sql(databases)
+    
     sql = f"""
         SELECT
              table_name
            , table_description
            , table_sorting_key
         FROM assistant.tables
-        WHERE database_name = {format_query_value(database)}
+        WHERE database_name IN ({databases_str})
         """
     if not check_table_exists("assistant.tables"):
         sql = f"""
@@ -110,7 +147,7 @@ def list_database_tables(database: str):
            , comment as table_description
            , sorting_key as table_sorting_key
         FROM system.tables
-        WHERE database = {format_query_value(database)}
+        WHERE database IN ({databases_str})
         """
 
     return execute_query(sql).to_markdown(index=False, tablefmt="pipe")
@@ -118,14 +155,14 @@ def list_database_tables(database: str):
 
 @mcp.tool(
     name="list_table_columns",
-    description="List all columns in a specified table."
+    description="List all columns in specified tables."
 )
-def list_table_columns(table_name_with_schema: str):
+def list_table_columns(table_names_with_schema: list[str]):
     """
-    List all columns in a specified table.
+    List all columns in specified tables.
 
     Args:
-        table_name_with_schema (str): The name of the table with schema.
+        table_names_with_schema (list[str]): The names of the tables with schema.
 
     Returns:
         str: JSON string containing the list of columns and their descriptions.
@@ -133,15 +170,18 @@ def list_table_columns(table_name_with_schema: str):
 
     logger.info(
         f"""Called tool: list_table_columns with argument
-        table_name_with_schema={table_name_with_schema}"""
+        table_names_with_schema={table_names_with_schema}"""
     )
+    
+    tables_str = format_list_for_sql(table_names_with_schema)
+    
     sql = f"""
         SELECT
              column_name
            , column_type
            , column_description
         FROM assistant.columns
-        WHERE table_name = {format_query_value(table_name_with_schema)}
+        WHERE table_name IN ({tables_str})
     """
     if not check_table_exists("assistant.columns"):
         sql = f"""
@@ -150,7 +190,7 @@ def list_table_columns(table_name_with_schema: str):
            , type as column_type
            , comment as column_description
         FROM system.columns
-        WHERE database || '.' || table = {format_query_value(table_name_with_schema)}
+        WHERE database || '.' || table IN ({tables_str})
         """
     return execute_query(sql).to_markdown(index=False, tablefmt="pipe")
 

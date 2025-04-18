@@ -1,6 +1,5 @@
 {
-    "python.defaultInterpreterPath": ".venv/bin/python",
-    "python.venvPath": ".venv",
+    "python.defaultInterpreterPath": "/usr/local/bin/python",
     "python.testing.pytestArgs": [
       "tests"
     ],
