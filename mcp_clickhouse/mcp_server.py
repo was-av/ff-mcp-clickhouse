@@ -246,8 +246,13 @@ def execute_query(query: str):
         str: JSON string containing the query results.
     """
     client = create_clickhouse_client()
+    sql = f"""
+    -- MCP CLICKHOUSE QUERY 
+    {query}
+    -- END MCP CLICKHOUSE QUERY
+    """
     try:
-        return client.query_df(query, settings={"readonly": 1})
+        return client.query_df(sql, settings={"readonly": 1})
     except Exception as err:
         logger.error(f"Error executing query: {err}")
         return f"error running query: {err}"
