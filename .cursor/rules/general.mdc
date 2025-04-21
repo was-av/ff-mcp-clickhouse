@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+** Всегда генерируй commit message на английском. Делай их краткими, но информативными. Используй Angular Commit Convention 
