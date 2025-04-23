@@ -3,4 +3,4 @@ description:
 globs: 
 alwaysApply: true
 ---
-** Всегда генерируй commit message на английском. Делай их краткими, но информативными. Используй Angular Commit Convention 
+** Always generate commit messages in English. Make them short but informative. Use Angular Commit Convention.

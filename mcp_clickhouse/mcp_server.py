@@ -49,27 +49,6 @@ deps = [
 mcp = FastMCP(MCP_SERVER_NAME, dependencies=deps)
 
 
-def helpful_hints():
-    """
-    Provide helpful hints for the user to improve their query.
-    """
-    return """
-    Отвечай только на конкретный вопрос пользователя. 
-    *** Не добавляй дополнительную аналитику ***
-
-    *** Обязательно обращай внимание на ключ сортировки таблицы(table_sorting_key), если он есть ***. 
-    Если в условии where необходимо использовать ключ сортировки, он должен быть на первом месте
-
-    Отдавай данные только в виде таблицы, которую вернул твой SQL запрос, отформатировав ее в markdown формате. Также покажи результирующи SQL код.
-
-    *** Используй синтаксис Clickhouse. *** 
-
-    *** Минимизируй вызовы MCP клиента для базы данных *** 
-    - В метод list_database_tables подставляй сразу все названия баз данных, которые могут быть полезными
-    - В метод list_table_columns подставляй сразу все названия таблиц, которые могут быть полезными    
-    """
-
-
 @mcp.tool(
     name="list_databases",
     description="List all databases in the ClickHouse server.",
