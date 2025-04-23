@@ -95,7 +95,7 @@ def format_list_for_sql(values: list[str]) -> str:
 
 @mcp.tool(
     name="list_database_tables",
-    description="List all tables in specified databases."
+    description="List tables in specified database(s). (supports multiple databases)"
 )
 def list_database_tables(databases: list[str]):
     """
@@ -134,7 +134,7 @@ def list_database_tables(databases: list[str]):
 
 @mcp.tool(
     name="list_table_columns",
-    description="List all columns in specified tables."
+    description="List all columns in specified tables. (supports multiple tables)"
 )
 def list_table_columns(table_names_with_schema: list[str]):
     """
