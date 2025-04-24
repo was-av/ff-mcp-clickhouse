@@ -18,14 +18,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
+      - run: uv python install
+      - run: uv build
 
-      - name: Install dependencies
-        run: uv python install
-
-      - name: Build package
-        run: uv build  # или замените на: python -m build
-
-      - name: Publish to PyPI
+      - name: Publish to PyPI (via Trusted Publisher)
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
