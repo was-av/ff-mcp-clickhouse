@@ -1,6 +1,6 @@
 import unittest
 
-from mcp_clickhouse.mcp_server import check_table_exists, execute_query
+from mcp_clickhouse.mcp_server import check_table_exists
 
 
 class TestTableExists(unittest.TestCase):
