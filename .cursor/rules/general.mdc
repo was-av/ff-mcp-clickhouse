@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+** Always generate commit messages in English. Make them short but informative. Use Angular Commit Convention.
