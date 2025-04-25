@@ -12,10 +12,12 @@ import clickhouse_connect
 import pandas as pd
 from clickhouse_connect.driver.binding import format_query_value
 from dotenv import load_dotenv
+from mcp.server.fastmcp import Context
 from mcp.server.fastmcp import FastMCP
 from functools import lru_cache
 
 from mcp_clickhouse.mcp_env import config
+from mcp_clickhouse.instructions import mcp_clickhouse_instructions
 
 
 pd.set_option('display.max_columns', 25)
@@ -32,7 +34,7 @@ logger = logging.getLogger(MCP_SERVER_NAME)
 # Thread pool executor for running queries
 QUERY_EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=10)
 atexit.register(lambda: QUERY_EXECUTOR.shutdown(wait=True))
-SELECT_QUERY_TIMEOUT_SECS = 30
+SELECT_QUERY_TIMEOUT_SECS = config.send_receive_timeout
 
 # Load environment variables from .env file
 load_dotenv()
@@ -47,6 +49,22 @@ deps = [
 
 # Initialize FastMCP server
 mcp = FastMCP(MCP_SERVER_NAME, dependencies=deps)
+
+
+@mcp.tool()
+async def advanced_tool(ctx: Context) -> str:
+    """Print mcp server name"""
+    # Access the FastMCP server instance
+    server_name = ctx.fastmcp.name
+    return f"Server name: {server_name}"
+
+
+@mcp.prompt(
+    name="SQL Agent Instructions",
+    description="Instructions for the LLM to interact with the ClickHouse server."
+)
+def instructions() -> str:
+    return mcp_clickhouse_instructions
 
 
 @mcp.tool(
