@@ -51,14 +51,6 @@ deps = [
 mcp = FastMCP(MCP_SERVER_NAME, dependencies=deps)
 
 
-@mcp.tool()
-async def advanced_tool(ctx: Context) -> str:
-    """Print mcp server name"""
-    # Access the FastMCP server instance
-    server_name = ctx.fastmcp.name
-    return f"Server name: {server_name}"
-
-
 @mcp.prompt(
     name="SQL Agent Instructions",
     description="Instructions for the LLM to interact with the ClickHouse server."
