@@ -12,7 +12,6 @@ import clickhouse_connect
 import pandas as pd
 from clickhouse_connect.driver.binding import format_query_value
 from dotenv import load_dotenv
-from mcp.server.fastmcp import Context
 from mcp.server.fastmcp import FastMCP
 from functools import lru_cache
 
