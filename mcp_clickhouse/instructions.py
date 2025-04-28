@@ -9,7 +9,8 @@ def load_instructions() -> str:
         str: The content of the instructions file.
     """
     folder = os.path.dirname(__file__)
-    with open(os.path.join(folder, "prompts/instructions.md"), "r") as f:
+    filename = os.path.join(folder, "prompts/instructions.md")
+    with open(filename, "r", encoding="utf-8") as f:
         return f.read()
     
 
